@@ -4,34 +4,37 @@ import * as cheerio from "cheerio";
 import fs from "fs";
 import { encode } from "gpt-3-encoder";
 
-const BASE_URL = "https://blog.liallen.me/";
+const BASE_URL = "https://blog.liallen.me";
 const CHUNK_SIZE = 200;
 
+const POST_LINKS_SELECTOR = '.notion-collection'
+const POST_ARTICLE_SELECTOR = '.notion-page'
+const DATE_REGEX = /([A-Z][a-z]+)\s(\d{1,2}),\s(\d{4})/; // e.g. "January 1, 2021"
+
+const isInternalURL = (url: string) => new URL(url, BASE_URL).origin === BASE_URL; // or url.startsWith('/')
+ 
 const getLinks = async () => {
-  const html = await axios.get(`${BASE_URL}`);
+  const html = await axios.get(`${BASE_URL}/posts`);
   const $ = cheerio.load(html.data);
-  const tables = $("table");
+  const tables = $(POST_LINKS_SELECTOR);
 
   const linksArr: { url: string; title: string }[] = [];
 
-  debugger
   tables.each((i, table) => {
-    if (i === 2) {
-      const links = $(table).find("a");
-      links.each((i, link) => {
-        const url = $(link).attr("href");
-        const title = $(link).text();
+    const links = $(table).find("a");
+    links.each((i, link) => {
+      const url = $(link).attr("href");
+      const title = $(link).text();
 
-        if (url && url.endsWith(".html")) {
-          const linkObj = {
-            url,
-            title
-          };
+      if (url && isInternalURL(url)) {
+        const linkObj = {
+          url,
+          title,
+        };
 
-          linksArr.push(linkObj);
-        }
-      });
-    }
+        linksArr.push(linkObj);
+      }
+    });
   });
 
   return linksArr;
@@ -48,22 +51,22 @@ const getEssay = async (linkObj: { url: string; title: string }) => {
     content: "",
     length: 0,
     tokens: 0,
-    chunks: []
+    chunks: [],
   };
 
   const fullLink = BASE_URL + url;
   const html = await axios.get(fullLink);
   const $ = cheerio.load(html.data);
-  const tables = $("table");
+  const tables = $(POST_ARTICLE_SELECTOR);
 
   tables.each((i, table) => {
-    if (i === 1) {
+    if (i === 0) {
       const text = $(table).text();
 
       let cleanedText = text.replace(/\s+/g, " ");
       cleanedText = cleanedText.replace(/\.([a-zA-Z])/g, ". $1");
 
-      const date = cleanedText.match(/([A-Z][a-z]+ [0-9]{4})/);
+      const date = cleanedText.match(DATE_REGEX);
       let dateStr = "";
       let textWithoutDate = "";
 
@@ -81,7 +84,9 @@ const getEssay = async (linkObj: { url: string; title: string }) => {
       if (lastSentence && lastSentence.includes("Thanks to")) {
         const thanksToSplit = lastSentence.split("Thanks to");
 
-        if (thanksToSplit[1].trim()[thanksToSplit[1].trim().length - 1] === ".") {
+        if (
+          thanksToSplit[1].trim()[thanksToSplit[1].trim().length - 1] === "."
+        ) {
           thanksTo = "Thanks to " + thanksToSplit[1].trim();
         } else {
           thanksTo = "Thanks to " + thanksToSplit[1].trim() + ".";
@@ -100,7 +105,7 @@ const getEssay = async (linkObj: { url: string; title: string }) => {
         content: trimmedContent,
         length: trimmedContent.length,
         tokens: encode(trimmedContent).length,
-        chunks: []
+        chunks: [],
       };
     }
   });
@@ -150,7 +155,7 @@ const chunkEssay = async (essay: Essay) => {
       content: trimmedText,
       content_length: trimmedText.length,
       content_tokens: encode(trimmedText).length,
-      embedding: []
+      embedding: [],
     };
 
     return chunk;
@@ -173,7 +178,7 @@ const chunkEssay = async (essay: Essay) => {
 
   const chunkedSection: Essay = {
     ...essay,
-    chunks: essayChunks
+    chunks: essayChunks,
   };
 
   return chunkedSection;
@@ -196,7 +201,7 @@ const chunkEssay = async (essay: Essay) => {
     url: "https://blog.liallen.me/",
     length: essays.reduce((acc, essay) => acc + essay.length, 0),
     tokens: essays.reduce((acc, essay) => acc + essay.tokens, 0),
-    essays
+    essays,
   };
 
   fs.writeFileSync("scripts/blog.json", JSON.stringify(json));
