@@ -1,19 +1,20 @@
-import { PGChunk, PGEssay, PGJSON } from "@/types";
+import { EssayChunk, Essay, EssayJSON } from "@/types";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import fs from "fs";
 import { encode } from "gpt-3-encoder";
 
-const BASE_URL = "http://www.paulgraham.com/";
+const BASE_URL = "https://blog.liallen.me/";
 const CHUNK_SIZE = 200;
 
 const getLinks = async () => {
-  const html = await axios.get(`${BASE_URL}articles.html`);
+  const html = await axios.get(`${BASE_URL}`);
   const $ = cheerio.load(html.data);
   const tables = $("table");
 
   const linksArr: { url: string; title: string }[] = [];
 
+  debugger
   tables.each((i, table) => {
     if (i === 2) {
       const links = $(table).find("a");
@@ -39,7 +40,7 @@ const getLinks = async () => {
 const getEssay = async (linkObj: { url: string; title: string }) => {
   const { title, url } = linkObj;
 
-  let essay: PGEssay = {
+  let essay: Essay = {
     title: "",
     url: "",
     date: "",
@@ -107,7 +108,7 @@ const getEssay = async (linkObj: { url: string; title: string }) => {
   return essay;
 };
 
-const chunkEssay = async (essay: PGEssay) => {
+const chunkEssay = async (essay: Essay) => {
   const { title, url, date, thanks, content, ...chunklessSection } = essay;
 
   let essayTextChunks = [];
@@ -141,7 +142,7 @@ const chunkEssay = async (essay: PGEssay) => {
   const essayChunks = essayTextChunks.map((text) => {
     const trimmedText = text.trim();
 
-    const chunk: PGChunk = {
+    const chunk: EssayChunk = {
       essay_title: title,
       essay_url: url,
       essay_date: date,
@@ -170,7 +171,7 @@ const chunkEssay = async (essay: PGEssay) => {
     }
   }
 
-  const chunkedSection: PGEssay = {
+  const chunkedSection: Essay = {
     ...essay,
     chunks: essayChunks
   };
@@ -189,14 +190,14 @@ const chunkEssay = async (essay: PGEssay) => {
     essays.push(chunkedEssay);
   }
 
-  const json: PGJSON = {
+  const json: EssayJSON = {
     current_date: "2023-03-01",
-    author: "Paul Graham",
-    url: "http://www.paulgraham.com/articles.html",
+    author: "Allen Li",
+    url: "https://blog.liallen.me/",
     length: essays.reduce((acc, essay) => acc + essay.length, 0),
     tokens: essays.reduce((acc, essay) => acc + essay.tokens, 0),
     essays
   };
 
-  fs.writeFileSync("scripts/pg.json", JSON.stringify(json));
+  fs.writeFileSync("scripts/blog.json", JSON.stringify(json));
 })();
