@@ -2,7 +2,7 @@
 create extension vector;
 
 -- RUN 2nd
-create table pg (
+create table allen (
   id bigserial primary key,
   essay_title text,
   essay_url text,
@@ -15,7 +15,7 @@ create table pg (
 );
 
 -- RUN 3rd after running the scripts
-create or replace function pg_search (
+create or replace function allen_search (
   query_embedding vector(1536),
   similarity_threshold float,
   match_count int
@@ -36,23 +36,23 @@ as $$
 begin
   return query
   select
-    pg.id,
-    pg.essay_title,
-    pg.essay_url,
-    pg.essay_date,
-    pg.essay_thanks,
-    pg.content,
-    pg.content_length,
-    pg.content_tokens,
-    1 - (pg.embedding <=> query_embedding) as similarity
-  from pg
-  where 1 - (pg.embedding <=> query_embedding) > similarity_threshold
-  order by pg.embedding <=> query_embedding
+    allen.id,
+    allen.essay_title,
+    allen.essay_url,
+    allen.essay_date,
+    allen.essay_thanks,
+    allen.content,
+    allen.content_length,
+    allen.content_tokens,
+    1 - (allen.embedding <=> query_embedding) as similarity
+  from allen
+  where 1 - (allen.embedding <=> query_embedding) > similarity_threshold
+  order by allen.embedding <=> query_embedding
   limit match_count;
 end;
 $$;
 
 -- RUN 4th
-create index on pg 
+create index on allen 
 using ivfflat (embedding vector_cosine_ops)
 with (lists = 100);
