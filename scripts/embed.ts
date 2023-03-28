@@ -1,6 +1,6 @@
 import { Essay, EssayJSON } from "@/types";
 import { loadEnvConfig } from "@next/env";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import fs from "fs";
 import { Configuration, OpenAIApi } from "openai";
 
@@ -27,6 +27,9 @@ const generateEmbeddings = async (essays: Essay[]) => {
 
       const [{ embedding }] = embeddingResponse.data.data;
 
+      // clear all data
+      // await deleteAll(supabase);
+
       const { data, error } = await supabase
         .from("allen")
         .insert({
@@ -47,13 +50,27 @@ const generateEmbeddings = async (essays: Essay[]) => {
         console.log("saved", i, j);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
   }
 };
+
+async function deleteAll(supabase: SupabaseClient) {
+  const { error } = await supabase
+    .from("allen")
+    .delete()
+    .neq('id', 0);
+  if (error) {
+    console.log("error", error);
+  } else {
+    console.log("deleted");
+  }
+}
 
 (async () => {
   const book: EssayJSON = JSON.parse(fs.readFileSync("scripts/blog.json", "utf8"));
 
   await generateEmbeddings(book.essays);
+  
+  console.log("✅ Done!");
 })();
