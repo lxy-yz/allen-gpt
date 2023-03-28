@@ -1,24 +1,28 @@
 import { Answer } from "@/components/Answer/Answer";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { PGChunk } from "@/types";
+import { EssayChunk } from "@/types";
+import { APP_NAME } from "@/utils/constants";
 import { IconArrowRight, IconExternalLink, IconSearch } from "@tabler/icons-react";
 import endent from "endent";
 import Head from "next/head";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 
+const LOCAL_STORAGE_MATCH_COUNT_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() +  "_MATCH_COUNT"
+const LOCAL_STORAGE_MODE_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() +  "_MODE"
+
 export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [query, setQuery] = useState<string>("");
-  const [chunks, setChunks] = useState<PGChunk[]>([]);
+  const [chunks, setChunks] = useState<EssayChunk[]>([]);
   const [answer, setAnswer] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [mode, setMode] = useState<"search" | "chat">("chat");
   const [matchCount, setMatchCount] = useState<number>(5);
-  const [apiKey, setApiKey] = useState<string>("");
+  const [apiKey] = useState<string>(process.env.NEXT_PUBLIC_OPENAI_API_KEY as string);
 
   const handleSearch = async () => {
     if (!apiKey) {
@@ -49,7 +53,7 @@ export default function Home() {
       throw new Error(searchResponse.statusText);
     }
 
-    const results: PGChunk[] = await searchResponse.json();
+    const results: EssayChunk[] = await searchResponse.json();
 
     setChunks(results);
 
@@ -89,7 +93,7 @@ export default function Home() {
       throw new Error(searchResponse.statusText);
     }
 
-    const results: PGChunk[] = await searchResponse.json();
+    const results: EssayChunk[] = await searchResponse.json();
 
     setChunks(results);
 
@@ -150,21 +154,19 @@ export default function Home() {
       return;
     }
 
-    localStorage.setItem("PG_KEY", apiKey);
-    localStorage.setItem("PG_MATCH_COUNT", matchCount.toString());
-    localStorage.setItem("PG_MODE", mode);
+    localStorage.setItem(LOCAL_STORAGE_MATCH_COUNT_KEY, matchCount.toString());
+    localStorage.setItem(LOCAL_STORAGE_MODE_KEY, mode);
 
     setShowSettings(false);
     inputRef.current?.focus();
   };
 
   const handleClear = () => {
-    localStorage.removeItem("PG_KEY");
-    localStorage.removeItem("PG_MATCH_COUNT");
-    localStorage.removeItem("PG_MODE");
-
-    setApiKey("");
+    // localStorage.removeItem("PG_KEY");
+    // setApiKey("");
+    localStorage.removeItem(LOCAL_STORAGE_MATCH_COUNT_KEY);
     setMatchCount(5);
+    localStorage.removeItem(LOCAL_STORAGE_MODE_KEY);
     setMode("search");
   };
 
@@ -177,20 +179,19 @@ export default function Home() {
   }, [matchCount]);
 
   useEffect(() => {
-    const PG_KEY = localStorage.getItem("PG_KEY");
-    const PG_MATCH_COUNT = localStorage.getItem("PG_MATCH_COUNT");
-    const PG_MODE = localStorage.getItem("PG_MODE");
+    // const PG_KEY = localStorage.getItem("PG_KEY");
+    // if (PG_KEY) {
+    //   setApiKey(PG_KEY);
+    // }
 
-    if (PG_KEY) {
-      setApiKey(PG_KEY);
+    const matchCount = localStorage.getItem(LOCAL_STORAGE_MATCH_COUNT_KEY);
+    if (matchCount) {
+      setMatchCount(parseInt(matchCount));
     }
 
-    if (PG_MATCH_COUNT) {
-      setMatchCount(parseInt(PG_MATCH_COUNT));
-    }
-
-    if (PG_MODE) {
-      setMode(PG_MODE as "search" | "chat");
+    const mode = localStorage.getItem(LOCAL_STORAGE_MODE_KEY);
+    if (mode) {
+      setMode(mode as "search" | "chat");
     }
 
     inputRef.current?.focus();
@@ -251,7 +252,7 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   <div>OpenAI API Key</div>
                   <input
                     type="password"
@@ -266,7 +267,7 @@ export default function Home() {
                       }
                     }}
                   />
-                </div>
+                </div> */}
 
                 <div className="mt-4 flex space-x-2 justify-center">
                   <div
@@ -357,7 +358,14 @@ export default function Home() {
                       <div className="mt-4 border border-zinc-600 rounded-lg p-4">
                         <div className="flex justify-between">
                           <div>
-                            <div className="font-bold text-xl">{chunk.essay_title}</div>
+                            <div 
+                              className="font-bold text-xl" 
+                              // dangerouslySetInnerHTML={{
+                              //   __html: chunk.essay_title
+                              // }} 
+                            >
+                              {chunk.essay_title}
+                            </div>
                             <div className="mt-1 font-bold text-sm">{chunk.essay_date}</div>
                           </div>
                           <a
