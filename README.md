@@ -1,6 +1,6 @@
-# Paul Graham GPT
+# Allen GPT
 
-AI-powered search and chat for [Paul Graham's](https://twitter.com/paulg) [essays](http://www.paulgraham.com/articles.html).
+AI-powered search and chat for [Allen's](https://liallen.me) [blog articles](http://blog.liallen.me).
 
 All code & data used is 100% open-source.
 
@@ -14,7 +14,7 @@ I recommend getting familiar with fetching, cleaning, and storing data as outlin
 
 ## How It Works
 
-Paul Graham GPT provides 2 things:
+Allen GPT provides 2 things:
 
 1. A search interface.
 2. A chat interface.
@@ -92,7 +92,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 npm run scrape
 ```
 
-This scrapes all of the essays from Paul Graham's website and saves them to a json file.
+This scrapes all of the essays from Allen's website and saves them to a json file.
 
 7. Run embedding script
 
@@ -116,7 +116,7 @@ npm run dev
 
 ## Credits
 
-Thanks to [Paul Graham](https://twitter.com/paulg) for his writing.
+Thanks to [Allen](https://twitter.com/paulg) for his writing.
 
 I highly recommend you read his essays.
 
