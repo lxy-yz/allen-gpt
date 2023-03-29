@@ -6,10 +6,11 @@ import { APP_NAME } from "@/utils/constants";
 import { IconArrowRight, IconExternalLink, IconSearch } from "@tabler/icons-react";
 import endent from "endent";
 import Head from "next/head";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { Fragment, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { Dialog, Transition } from '@headlessui/react'
 
-const LOCAL_STORAGE_MATCH_COUNT_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() +  "_MATCH_COUNT"
-const LOCAL_STORAGE_MODE_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() +  "_MODE"
+const LOCAL_STORAGE_MATCH_COUNT_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() + "_MATCH_COUNT"
+const LOCAL_STORAGE_MODE_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() + "_MODE"
 
 export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -216,79 +217,117 @@ export default function Home() {
       </Head>
 
       <div className="flex flex-col h-screen">
-        <Navbar />
+        <Navbar showSettings={showSettings} setShowSettings={setShowSettings} />
+
         <div className="flex-1 overflow-auto">
           <div className="mx-auto flex h-full w-full max-w-[750px] flex-col items-center px-3 pt-4 sm:pt-8">
-            <button
-              className="mt-4 flex cursor-pointer items-center space-x-2 rounded-full border border-zinc-600 px-3 py-1 text-sm hover:opacity-50"
-              onClick={() => setShowSettings(!showSettings)}
-            >
-              {showSettings ? "Hide" : "Show"} Settings
-            </button>
-
             {showSettings && (
-              <div className="w-[340px] sm:w-[400px]">
-                <div>
-                  <div>Mode</div>
-                  <select
-                    className="max-w-[400px] block w-full cursor-pointer rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
-                    value={mode}
-                    onChange={(e) => setMode(e.target.value as "search" | "chat")}
-                  >
-                    <option value="search">Search</option>
-                    <option value="chat">Chat</option>
-                  </select>
-                </div>
+              <>
+                <Transition appear show={showSettings} as={Fragment}>
+                  <Dialog as="div" className="relative z-10" onClose={() => setShowSettings(false)}>
+                    <Transition.Child
+                      as={Fragment}
+                      enter="ease-out duration-300"
+                      enterFrom="opacity-0"
+                      enterTo="opacity-100"
+                      leave="ease-in duration-200"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
 
-                <div className="mt-2">
-                  <div>Passage Count</div>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={matchCount}
-                    onChange={(e) => setMatchCount(Number(e.target.value))}
-                    className="max-w-[400px] block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
+                    <div className="fixed inset-0 overflow-y-auto">
+                      <div className="flex min-h-full items-center justify-center p-4 text-center">
+                        <Transition.Child
+                          as={Fragment}
+                          enter="ease-out duration-300"
+                          enterFrom="opacity-0 scale-95"
+                          enterTo="opacity-100 scale-100"
+                          leave="ease-in duration-200"
+                          leaveFrom="opacity-100 scale-100"
+                          leaveTo="opacity-0 scale-95"
+                        >
+                          <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            <Dialog.Title
+                              as="h3"
+                              className="text-lg font-medium leading-6 text-gray-900"
+                            >
+                              Settings
+                            </Dialog.Title>
 
-                {/* <div className="mt-2">
-                  <div>OpenAI API Key</div>
-                  <input
-                    type="password"
-                    placeholder="OpenAI API Key"
-                    className="max-w-[400px] block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
-                    value={apiKey}
-                    onChange={(e) => {
-                      setApiKey(e.target.value);
+                            <div className="mt-4 text-sm text-gray-500 w-[340px] sm:w-[400px]">
+                              <div className="flex flex-col gap-1">
+                                <div>Mode</div>
+                                <select
+                                  className="max-w-[400px] block w-full cursor-pointer rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                                  value={mode}
+                                  onChange={(e) => setMode(e.target.value as "search" | "chat")}
+                                >
+                                  <option value="search">Search</option>
+                                  <option value="chat">Chat</option>
+                                </select>
+                              </div>
 
-                      if (e.target.value.length !== 51) {
-                        setShowSettings(true);
-                      }
-                    }}
-                  />
-                </div> */}
+                              <div className="mt-3 flex flex-col gap-1">
+                                <div>Passage Count</div>
+                                <input
+                                  type="number"
+                                  min={1}
+                                  max={10}
+                                  value={matchCount}
+                                  onChange={(e) => setMatchCount(Number(e.target.value))}
+                                  className="max-w-[400px] block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                                />
+                              </div>
 
-                <div className="mt-4 flex space-x-2 justify-center">
-                  <div
-                    className="flex cursor-pointer items-center space-x-2 rounded-full bg-green-500 px-3 py-1 text-sm text-white hover:bg-green-600"
-                    onClick={handleSave}
-                  >
-                    Save
-                  </div>
+                              {/* <div className="mt-2">
+                                <div>OpenAI API Key</div>
+                                <input
+                                  type="password"
+                                  placeholder="OpenAI API Key"
+                                  className="max-w-[400px] block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                                  value={apiKey}
+                                  onChange={(e) => {
+                                    setApiKey(e.target.value);
 
-                  <div
-                    className="flex cursor-pointer items-center space-x-2 rounded-full bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-                    onClick={handleClear}
-                  >
-                    Clear
-                  </div>
-                </div>
-              </div>
+                                    if (e.target.value.length !== 51) {
+                                      setShowSettings(true);
+                                    }
+                                  }}
+                                />
+                              </div> */}
+
+                              <div className="mt-4 flex space-x-3 justify-center">
+                                <div
+                                  className="flex cursor-pointer items-center space-x-2 rounded-full px-3 py-1 text-sm 
+                                  text-green-900 bg-green-200 hover:bg-green-300"
+                                  onClick={handleSave}
+                                >
+                                  Save
+                                </div>
+
+                                <div
+                                  className="flex cursor-pointer items-center space-x-2 rounded-full px-3 py-1 text-sm 
+                                  text-red-900  bg-red-200  hover:bg-red-300"
+                                  onClick={handleClear}
+                                >
+                                  Clear
+                                </div>
+                              </div>
+                            </div>
+                          </Dialog.Panel>
+                        </Transition.Child>
+                      </div>
+                    </div>
+                  </Dialog>
+                </Transition>
+
+              </>
             )}
 
             {apiKey.length === 51 ? (
-              <div className="relative w-full mt-4">
+              <div className="relative w-full mt-10 lg:mt-20">
                 <IconSearch className="absolute top-3 w-10 left-1 h-6 rounded-full opacity-50 sm:left-3 sm:top-4 sm:h-8" />
 
                 <input
@@ -358,11 +397,11 @@ export default function Home() {
                       <div className="mt-4 border border-zinc-600 rounded-lg p-4">
                         <div className="flex justify-between">
                           <div>
-                            <div 
-                              className="font-bold text-xl" 
-                              // dangerouslySetInnerHTML={{
-                              //   __html: chunk.essay_title
-                              // }} 
+                            <div
+                              className="font-bold text-xl"
+                            // dangerouslySetInnerHTML={{
+                            //   __html: chunk.essay_title
+                            // }} 
                             >
                               {chunk.essay_title}
                             </div>
@@ -409,7 +448,8 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="mt-6 text-center text-lg">{`AI-powered search & chat for Allen's essays.`}</div>
+              null
+              // <div className="mt-6 text-center text-lg">{`AI-powered search & chat for Allen's essays.`}</div>
             )}
           </div>
         </div>

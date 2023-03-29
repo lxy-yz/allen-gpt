@@ -7,7 +7,7 @@ export const Footer: FC = () => {
       <div className="hidden sm:flex"></div>
 
       <div className="hidden sm:flex italic text-sm">
-        Based on the
+        {/* Based on the
         <a
           className="hover:opacity-50 mx-1"
           href="https://blog.liallen.me/posts"
@@ -16,7 +16,8 @@ export const Footer: FC = () => {
         >
           essays
         </a>
-        of Allen.
+        of Allen. */}
+        AI-powered search & chat for Allen's essays.
       </div>
 
       <div className="flex space-x-4">
