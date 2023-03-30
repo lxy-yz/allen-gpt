@@ -6,7 +6,7 @@ export const Footer: FC = () => {
     <div className="flex h-[50px] border-t border-gray-300 py-2 px-8 items-center sm:justify-between justify-center">
       <div className="hidden sm:flex"></div>
 
-      <div className="hidden sm:flex italic text-sm">
+      <div className="hidden sm:flex text-sm">
         {/* Based on the
         <a
           className="hover:opacity-50 mx-1"
@@ -17,7 +17,7 @@ export const Footer: FC = () => {
           essays
         </a>
         of Allen. */}
-        AI-powered search & chat for Allen's essays.
+        🤖 powered search for Allen's essays.
       </div>
 
       <div className="flex space-x-4">

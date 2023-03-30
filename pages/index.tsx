@@ -168,7 +168,7 @@ export default function Home() {
     localStorage.removeItem(LOCAL_STORAGE_MATCH_COUNT_KEY);
     setMatchCount(5);
     localStorage.removeItem(LOCAL_STORAGE_MODE_KEY);
-    setMode("search");
+    setMode("chat");
   };
 
   useEffect(() => {
@@ -339,6 +339,11 @@ export default function Home() {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                 />
+                <style jsx>{`
+                  input:placeholder-shown {
+                    font-style: italic;
+                  }
+                `}</style>
 
                 <button>
                   <IconArrowRight
