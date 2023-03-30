@@ -10,7 +10,7 @@ export const Navbar = ({ showSettings, setShowSettings }: { showSettings: boolea
           className="hover:opacity-50"
           href="https://liallen.me"
         >
-          Allen GPT
+          AMA GPT
         </a>
       </div>
       <div className="flex items-center gap-2">
