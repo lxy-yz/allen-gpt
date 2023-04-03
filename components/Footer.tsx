@@ -1,5 +1,5 @@
 import { IconBrandGithub, IconBrandTwitter } from "@tabler/icons-react";
-import { FC } from "react";
+import type { FC } from "react";
 
 export const Footer: FC = () => {
   return (
@@ -17,7 +17,7 @@ export const Footer: FC = () => {
           essays
         </a>
         of Allen. */}
-        🤖 powered search for Allen's essays.
+        🤖 powered search for Allen{"'"}s essays.
       </div>
 
       <div className="flex space-x-4">
