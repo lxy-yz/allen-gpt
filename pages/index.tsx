@@ -3,14 +3,20 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { EssayChunk } from "@/types";
 import { APP_NAME } from "@/utils/constants";
-import { IconArrowRight, IconExternalLink, IconSearch } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconExternalLink,
+  IconSearch,
+} from "@tabler/icons-react";
 import endent from "endent";
 import Head from "next/head";
 import { Fragment, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Transition } from "@headlessui/react";
 
-const LOCAL_STORAGE_MATCH_COUNT_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() + "_MATCH_COUNT"
-const LOCAL_STORAGE_MODE_KEY = APP_NAME.replaceAll(' ', '_').toUpperCase() + "_MODE"
+const LOCAL_STORAGE_MATCH_COUNT_KEY =
+  APP_NAME.replaceAll(" ", "_").toUpperCase() + "_MATCH_COUNT";
+const LOCAL_STORAGE_MODE_KEY =
+  APP_NAME.replaceAll(" ", "_").toUpperCase() + "_MODE";
 
 export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,7 +29,9 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [mode, setMode] = useState<"search" | "chat">("chat");
   const [matchCount, setMatchCount] = useState<number>(5);
-  const [apiKey] = useState<string>(process.env.NEXT_PUBLIC_OPENAI_API_KEY as string);
+  const [apiKey] = useState<string>(
+    process.env.NEXT_PUBLIC_OPENAI_API_KEY as string
+  );
 
   const handleSearch = async () => {
     if (!apiKey) {
@@ -44,9 +52,9 @@ export default function Home() {
     const searchResponse = await fetch("/api/search", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query, apiKey, matches: matchCount })
+      body: JSON.stringify({ query, apiKey, matches: matchCount }),
     });
 
     if (!searchResponse.ok) {
@@ -84,9 +92,9 @@ export default function Home() {
     const searchResponse = await fetch("/api/search", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query, apiKey, matches: matchCount })
+      body: JSON.stringify({ query, apiKey, matches: matchCount }),
     });
 
     if (!searchResponse.ok) {
@@ -107,9 +115,9 @@ export default function Home() {
     const answerResponse = await fetch("/api/answer", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt, apiKey })
+      body: JSON.stringify({ prompt, apiKey }),
     });
 
     if (!answerResponse.ok) {
@@ -206,14 +214,8 @@ export default function Home() {
           name="description"
           content={`AI-powered search and chat for Allen's essays.`}
         />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1"
-        />
-        <link
-          rel="icon"
-          href="/favicon.ico"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="flex flex-col h-screen">
@@ -224,7 +226,11 @@ export default function Home() {
             {showSettings && (
               <>
                 <Transition appear show={showSettings} as={Fragment}>
-                  <Dialog as="div" className="relative z-10" onClose={() => setShowSettings(false)}>
+                  <Dialog
+                    as="div"
+                    className="relative z-10"
+                    onClose={() => setShowSettings(false)}
+                  >
                     <Transition.Child
                       as={Fragment}
                       enter="ease-out duration-300"
@@ -262,7 +268,9 @@ export default function Home() {
                                 <select
                                   className="max-w-[400px] block w-full cursor-pointer rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
                                   value={mode}
-                                  onChange={(e) => setMode(e.target.value as "search" | "chat")}
+                                  onChange={(e) =>
+                                    setMode(e.target.value as "search" | "chat")
+                                  }
                                 >
                                   <option value="search">Search</option>
                                   <option value="chat">Chat</option>
@@ -276,7 +284,9 @@ export default function Home() {
                                   min={1}
                                   max={10}
                                   value={matchCount}
-                                  onChange={(e) => setMatchCount(Number(e.target.value))}
+                                  onChange={(e) =>
+                                    setMatchCount(Number(e.target.value))
+                                  }
                                   className="max-w-[400px] block w-full rounded-md border border-gray-300 p-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
                                 />
                               </div>
@@ -322,35 +332,44 @@ export default function Home() {
                     </div>
                   </Dialog>
                 </Transition>
-
               </>
             )}
 
             {apiKey.length === 51 ? (
-              <div className="relative w-full mt-10 lg:mt-20">
-                <IconSearch className="absolute top-3 w-10 left-1 h-6 rounded-full opacity-50 sm:left-3 sm:top-4 sm:h-8" />
-
-                <input
-                  ref={inputRef}
-                  className="h-12 w-full rounded-full border border-zinc-600 pr-12 pl-11 focus:border-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-800 sm:h-16 sm:py-2 sm:pr-16 sm:pl-16 sm:text-lg"
-                  type="text"
-                  placeholder="Ask allen anything ..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-                <style jsx>{`
-                  input:placeholder-shown {
-                    font-style: italic;
-                  }
-                `}</style>
-
-                <button>
-                  <IconArrowRight
-                    onClick={mode === "search" ? handleSearch : handleAnswer}
-                    className="absolute right-2 top-2.5 h-7 w-7 rounded-full bg-blue-500 p-1 hover:cursor-pointer hover:bg-blue-600 sm:right-3 sm:top-3 sm:h-10 sm:w-10 text-white"
+              <div className="w-full">
+                <div className="relative mt-10 lg:mt-20">
+                  <IconSearch className="absolute top-3 w-10 left-1 h-6 rounded-full opacity-50 sm:left-3 sm:top-4 sm:h-8" />
+                  <input
+                    ref={inputRef}
+                    className="text-gray-700 h-12 w-full rounded-full border border-zinc-600 pr-12 pl-11 focus:border-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-800 sm:h-16 sm:py-2 sm:pr-16 sm:pl-16 sm:text-lg"
+                    type="text"
+                    placeholder="How you think about being bad?"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
                   />
-                </button>
+                  <style jsx>{`
+                    input:placeholder-shown {
+                      // font-style: italic;
+                    }
+                  `}</style>
+
+                  <button>
+                    <IconArrowRight
+                      onClick={mode === "search" ? handleSearch : handleAnswer}
+                      className="absolute right-2 top-2.5 h-7 w-7 rounded-full bg-blue-500 p-1 hover:cursor-pointer hover:bg-blue-600 sm:right-3 sm:top-3 sm:h-10 sm:w-10 text-white"
+                    />
+                  </button>
+                </div>
+
+                <h2
+                  className="text-center italic mx-auto te font-bold text-3xl mt-12
+                  break-words truncate bg-clip-text text-transparent
+                  bg-gradient-to-r from-green-400 to-blue-500
+                 "
+                >
+                  Ask Allen Anything.
+                </h2>
               </div>
             ) : (
               <div className="text-center font-bold text-3xl mt-7">
@@ -402,13 +421,16 @@ export default function Home() {
                       <div className="mt-4 border border-zinc-600 rounded-lg p-4">
                         <div className="flex justify-between">
                           <div>
-                            <div
-                              className="font-bold text-xl"
-                            >
+                            <div className="font-bold text-xl">
                               {/* FIXME: title with <img /> tag */}
-                              {chunk.essay_title.replace(/<img[^>]+src="([^"]+)"(.*)\/>/i, '➜')}
+                              {chunk.essay_title.replace(
+                                /<img[^>]+src="([^"]+)"(.*)\/>/i,
+                                "➜"
+                              )}
                             </div>
-                            <div className="mt-1 font-bold text-sm">{chunk.essay_date}</div>
+                            <div className="mt-1 font-bold text-sm">
+                              {chunk.essay_date}
+                            </div>
                           </div>
                           <a
                             className="hover:opacity-50 ml-2"
@@ -436,8 +458,12 @@ export default function Home() {
                     <div className="mt-4 border border-zinc-600 rounded-lg p-4">
                       <div className="flex justify-between">
                         <div>
-                          <div className="font-bold text-xl">{chunk.essay_title}</div>
-                          <div className="mt-1 font-bold text-sm">{chunk.essay_date}</div>
+                          <div className="font-bold text-xl">
+                            {chunk.essay_title}
+                          </div>
+                          <div className="mt-1 font-bold text-sm">
+                            {chunk.essay_date}
+                          </div>
                         </div>
                         <a
                           className="hover:opacity-50 ml-2"
@@ -453,10 +479,9 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            ) : (
-              null
+            ) : null
               // <div className="mt-6 text-center text-lg">{`AI-powered search & chat for Allen's essays.`}</div>
-            )}
+            }
           </div>
         </div>
         <Footer />
