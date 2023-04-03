@@ -404,11 +404,9 @@ export default function Home() {
                           <div>
                             <div
                               className="font-bold text-xl"
-                            // dangerouslySetInnerHTML={{
-                            //   __html: chunk.essay_title
-                            // }} 
                             >
-                              {chunk.essay_title}
+                              {/* FIXME: title with <img /> tag */}
+                              {chunk.essay_title.replace(/<img[^>]+src="([^"]+)"(.*)\/>/i, '➜')}
                             </div>
                             <div className="mt-1 font-bold text-sm">{chunk.essay_date}</div>
                           </div>
@@ -421,7 +419,10 @@ export default function Home() {
                             <IconExternalLink />
                           </a>
                         </div>
-                        <div className="mt-2">{chunk.content}</div>
+                        <div
+                          className="mt-2"
+                          dangerouslySetInnerHTML={{ __html: chunk.content }}
+                        />
                       </div>
                     </div>
                   ))}
