@@ -218,7 +218,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex flex-col h-screen">
+      <div className="bg-gpt bg-cover flex flex-col h-screen">
         <Navbar showSettings={showSettings} setShowSettings={setShowSettings} />
 
         <div className="flex-1 overflow-auto">
