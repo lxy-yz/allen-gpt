@@ -28,7 +28,8 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const json = await res.json();
-    const embedding = json.data[0]?.embedding;
+    console.log("json", json);
+    const embedding = json.data[0].embedding;
 
     const { data: chunks, error } = await supabaseAdmin.rpc(
       POSTGRES_FUNCTION_NAME,
