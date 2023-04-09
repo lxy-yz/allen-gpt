@@ -409,11 +409,11 @@ export default function Home() {
                 </div>
               </div>
             ) : answer ? (
-              <div className="mt-6">
+              <div className="w-full mt-6">
                 <div className="font-bold text-2xl mb-2">Answer</div>
                 <Answer text={answer} />
 
-                <div className="mt-6 mb-16">
+                <div className="w-full mt-6 mb-16">
                   <div className="font-bold text-2xl">Passages</div>
 
                   {chunks.map((chunk, index) => (
@@ -451,7 +451,7 @@ export default function Home() {
                 </div>
               </div>
             ) : chunks.length > 0 ? (
-              <div className="mt-6 pb-16">
+              <div className="w-full mt-6 pb-16">
                 <div className="font-bold text-2xl">Passages</div>
                 {chunks.map((chunk, index) => (
                   <div key={index}>
