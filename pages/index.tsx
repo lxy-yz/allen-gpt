@@ -221,7 +221,7 @@ export default function Home() {
       <div className="bg-gpt bg-cover flex flex-col h-screen">
         <Navbar showSettings={showSettings} setShowSettings={setShowSettings} />
 
-        <div className="flex-1 overflow-auto">
+        <div className="break-words	flex-1 overflow-auto">
           <div className="mx-auto flex h-full w-full max-w-[750px] flex-col items-center px-3 pt-4 sm:pt-8">
             {showSettings && (
               <>
