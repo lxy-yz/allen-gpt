@@ -33,7 +33,8 @@ export default function App({ Component, pageProps }: AppProps<{}>) {
           onReady={() => {
             window.VANTA.NET({
               el: '#background',
-              color: '#06b6d4'
+              color: '#06b6d4',
+              backgroundColor: '#0f172a',
             })
           }}
         />
