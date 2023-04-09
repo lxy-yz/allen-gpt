@@ -35,6 +35,7 @@ export default function App({ Component, pageProps }: AppProps<{}>) {
               el: '#background',
               color: '#06b6d4',
               backgroundColor: '#0f172a',
+              points: 5
             })
           }}
         />
