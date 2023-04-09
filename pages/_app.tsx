@@ -27,8 +27,8 @@ export default function App({ Component, pageProps }: AppProps<{}>) {
           }
         `}</style>
 
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></Script>
         <Script
+          defer
           src="https://cdn.jsdelivr.net/npm/vanta/dist/vanta.net.min.js"
           onReady={() => {
             window.VANTA.NET({
