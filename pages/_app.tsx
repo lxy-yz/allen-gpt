@@ -16,6 +16,7 @@ export default function App({ Component, pageProps }: AppProps<{}>) {
     <main className={inter.className}>
       <Component {...pageProps} />
 
+      {/* TODO: refactor to hooks */}
       <div>
         <div id="background" className='w-screen h-screen !absolute -z-10 top-0 left-0'>
         </div>
